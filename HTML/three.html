@@ -40,6 +40,7 @@
                 window.scroll(0, 0)
                 const originScrollY = window.pageYOffset;
                 const scene = new THREE.Scene();
+                scene.background = new THREE.Color(0x000)
                 originalAspect = window.innerWidth / window.innerHeight;
                 const camera = new THREE.PerspectiveCamera(50, originalAspect, 0.1, 1000);
                 
@@ -48,14 +49,16 @@
                 document.body.appendChild( renderer.domElement );
 
                 const loader = new THREE.TextureLoader();
-                const texture = loader.load('http://192.168.86.219:3000/images/world-outline-black.png');
+                const black_texture = loader.load('https://jibble330.pythonanywhere.com/files/world-outline-black.png');
+                const white_texture = loader.load('https://jibble330.pythonanywhere.com/files/world-outline-white.png');
 
                 const geometry = new THREE.SphereGeometry(2, 32, 32);
-                const material = new THREE.MeshBasicMaterial( { map: texture } );
-                const sphere = new THREE.Mesh( geometry, material );
-                scene.add( sphere );
+                const material = new THREE.MeshBasicMaterial({map: black_texture});
+                const sphere = new THREE.Mesh(geometry, material);
+                scene.add(sphere);
                 camera.position.z = 10;
                 camera.position.x = -15;
+                let inverted = false;
 
                 const animate = (amount) => {
                     const end_pos = -4;
@@ -71,9 +74,25 @@
 
                     renderer.render(scene, camera);
                 };
+                const invert = () => {
+                    if(inverted) {
+                        material.map = black_texture;
+                        scene.background = new THREE.Color(0x000);
+                    } else {
+                        material.map = white_texture;
+                        scene.background = new THREE.Color(0xffffff);
+                    }
+                    material.map.needsUpdate = true;
+                    scene.background.needsUpdate = true;
+                    renderer.render(scene, camera);
+                    inverted = !inverted;
+                }
                 animate(0);
 
                 let lastScrollY = window.pageYOffset;
+                $(document).click(() => {
+                    invert()
+                })
                 $(window).scroll(() => {
                     let amount = (this.pageYOffset - lastScrollY) * 0.002;
                     lastScrollY = window.pageYOffset;
