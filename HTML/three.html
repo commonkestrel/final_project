@@ -87,11 +87,19 @@
                     renderer.render(scene, camera);
                     inverted = !inverted;
                 }
+                const delay_invert = (i) => {
+                    setTimeout(() => {
+                        invert()
+                        if (i < 11) {
+                            delay_invert(i+1)
+                        }
+                    },50)
+                }
                 animate(0);
 
                 let lastScrollY = window.pageYOffset;
                 $(document).click(() => {
-                    invert()
+                    delay_invert(0)
                 })
                 $(window).scroll(() => {
                     let amount = (this.pageYOffset - lastScrollY) * 0.002;
