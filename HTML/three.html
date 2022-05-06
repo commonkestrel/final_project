@@ -61,8 +61,8 @@
                 let inverted = false;
 
                 const animate = (amount) => {
-                    const end_pos = -4;
-                    const end_pixel = 246.6666667 * (end_pos+15)
+                    const end_pos = 0;
+                    const end_pixel = 247 * (end_pos+15)
                     
                     sphere.rotation.y += amount;
                     if(window.pageYOffset < originScrollY + end_pixel) {
@@ -97,9 +97,30 @@
                 }
                 animate(0);
 
+                const curve_move = () => {
+                    const curve = new THREE.CatmullRomCurve3( [
+                        new THREE.Vector3(5, -10, 0),
+                        new THREE.Vector3(4.33, -10, 2.5),
+                        new THREE.Vector3(2.5, -10, 4.33),
+                        new THREE.Vector3(0, -10, 5)
+                    ] );
+
+                    const points = curve.getPoints( 50 );
+                    const geometry = new THREE.BufferGeometry().setFromPoints( points );
+
+                    const material = new THREE.LineBasicMaterial( { color: 0xff0000 } );
+
+                    // Create the final object to add to the scene
+                    const curveObject = new THREE.Line(geometry, material);
+                    scene.add(curveObject)
+                    camera.lookAt(new THREE.Vector3(4.33, -10, 2.5))
+                    renderer.render(scene, camera);
+                }
+
                 let lastScrollY = window.pageYOffset;
                 $(document).click(() => {
-                    delay_invert(0)
+                    //delay_invert(0)
+                    curve_move()
                 })
                 $(window).scroll(() => {
                     let amount = (this.pageYOffset - lastScrollY) * 0.002;
