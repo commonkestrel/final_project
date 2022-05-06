@@ -40,16 +40,15 @@
                 window.scroll(0, 0)
                 const originScrollY = window.pageYOffset;
                 const scene = new THREE.Scene();
-                const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
                 originalAspect = window.innerWidth / window.innerHeight;
-
+                const camera = new THREE.PerspectiveCamera(50, originalAspect, 0.1, 1000);
+                
                 const renderer = new THREE.WebGLRenderer();
                 renderer.setSize( window.innerWidth, window.innerHeight );
                 document.body.appendChild( renderer.domElement );
 
                 const loader = new THREE.TextureLoader();
-                loader.setCrossOrigin('anonymous')
-                const texture = loader.load('http://localhost:3000/images/world-outline-black.png');
+                const texture = loader.load('http://192.168.86.219:3000/images/world-outline-black.png');
 
                 const geometry = new THREE.SphereGeometry(2, 32, 32);
                 const material = new THREE.MeshBasicMaterial( { map: texture } );
