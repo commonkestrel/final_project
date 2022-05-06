@@ -5,7 +5,17 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="http://threejs.org/build/three.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
         <style>
+            #glow {
+                position: fixed;
+                top: 75%;
+                left: 75%;
+                box-shadow: 0px 0px 60px 40px rgba(255,255,255);
+                height: 0px;
+                width: 0px;
+            }
             .error-message {
                 color: red;
                 display: flex;
@@ -44,9 +54,18 @@
                 background-color: rgb(214, 214, 214) !important; 
                 outline-color: rgb(27, 27, 27) !important;
             }
+            .fa {
+                position: relative;
+                top: 4px;
+            }
+            #globe {
+                z-index: -1;
+            }
         </style>
     </head>
     <body>
+        <canvas id="globe" width="100%" height="100%"></canvas>
+        <div id="glow"></div>
         <div class="container">
             <button type="button" class="btn btn-primary toggle" id="demotoggle">Log in</button>
             <button type="button" class="btn btn-primary toggle" id="signuptoggle">Sign up</button>
@@ -69,21 +88,17 @@
                     <div class="form-floating mb-3 mt-3">
                         <input type="email" class="form-control" id="email" placeholder="Password" name="email">
                         <label for="pass">Email</label>
-                        <small id="email-error" class="error-message">Please input a vaild email.</small>
-                    </div>
-                        <div class="form-floating mt-3 mb-3">
-                        <input type="text" class="form-control" id="username" aria-describedby="update" placeholder="Username" name="user">
-                        <label for="confirm">Username</label>
-                    </div>
+                        <small id="email-error" class="error-message"><i class="fa fa-warning"></i>  Please input a vaild email.</small>
                     <div class="form-floating mb-3 mt-3">
-                        <input type="password" class="form-control confirm" id="pass" placeholder="Password" name="pass">
+                        <input type="password" class="form-control confirm" aria-describedby="pass-error" id="pass" placeholder="Password" name="pass">
                         <label for="pass">Password</label>
+                        <small id="pass-error" class="error-message"></small>
                         </div>
                         
                         <div class="form-floating mt-3 mb-3">
                         <input type="password" class="form-control confirm" id="confirm" aria-describedby="update" placeholder="Same as password">
                         <label for="confirm">Confirm</label>
-                        <small id="confirm-error" class="error-message">Must be the same as password.</small>
+                        <small id="confirm-error" class="error-message"><i class="fa fa-warning"></i>  Must be the same as password.</small>
                     </div>
                 </form>
                 <button type="button" id="signupbutton" class="btn btn-primary">Sign up</button>
@@ -97,8 +112,14 @@
                     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
                   );
             };
+
             $(document).ready(() => {
                 $(".error-message").hide()
+
+                $(window).scroll(() => {
+                    document.body.style.setProperty('--scroll',window.pageYOffset / (document.body.offsetHeight - window.innerHeight));
+                });
+
                 $("#signuptoggle").click(() => {
                     $(".collapse").collapse('hide');
                     $("#signup").collapse('toggle');
@@ -142,7 +163,17 @@
                     confirm_val = $("#confirm").val();
                     if(email_val == "" || !valid_email(email_val)) {
                         errors++;
+                        $("#email-error").show()
                     }
+                    if(pass_val != confirm_val) {
+                        errors++;
+                        $("#confirm-error").show()
+                    }
+                    if(pass_val.length < 8) {
+                        errors++;
+                        $("#pass-error").html('<i class="fa fa-warning"></i>  Password must be 8 characters or longer.')
+                    }
+
                     if(errors == 0) {
                         $("#signupform").submit();
                     }
