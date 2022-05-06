@@ -97,24 +97,45 @@
                 }
                 animate(0);
 
+                const delay_travel = (i, point) => {
+                    setTimeout(() => {
+                        camera.position.copy(point)
+                        camera.lookAt(0, 0, 0)
+                        renderer.render(scene, camera);
+                    }, 20*i);
+                }
+
                 const curve_move = () => {
                     const curve = new THREE.CatmullRomCurve3( [
-                        new THREE.Vector3(5, -10, 0),
-                        new THREE.Vector3(4.33, -10, 2.5),
-                        new THREE.Vector3(2.5, -10, 4.33),
-                        new THREE.Vector3(0, -10, 5)
+                        new THREE.Vector3(0, 0, 10),
+                        new THREE.Vector3(5, 0, 8.66),
+                        new THREE.Vector3(7.71, 0, 7.71),
+                        new THREE.Vector3(8.66, 0, 5),
+                        new THREE.Vector3(10, 0, 0),
                     ] );
 
-                    const points = curve.getPoints( 50 );
-                    const geometry = new THREE.BufferGeometry().setFromPoints( points );
+                    const points = curve.getPoints(50);
 
-                    const material = new THREE.LineBasicMaterial( { color: 0xff0000 } );
+                    var ellipse = new THREE.EllipseCurve(0, 0, 1, 5, 0, 2.0 * Math.PI, false);
+                    const ellipsepoints = ellipse.getPoints(200).slice(0, 50)
 
+                    const geometry = new THREE.BufferGeometry().setFromPoints( ellipsepoints );
+
+                    const material = new THREE.LineBasicMaterial({color: 0xff0000});
                     // Create the final object to add to the scene
                     const curveObject = new THREE.Line(geometry, material);
                     scene.add(curveObject)
-                    camera.lookAt(new THREE.Vector3(4.33, -10, 2.5))
                     renderer.render(scene, camera);
+                    /*const geometry = new THREE.BufferGeometry().setFromPoints( points );
+
+                    const material = new THREE.LineBasicMaterial({color: 0xff0000});
+                    // Create the final object to add to the scene
+                    const curveObject = new THREE.Line(geometry, material);
+                    scene.add(curveObject)
+                    camera.lookAt(new THREE.Vector3(4.33, -10, 2.5)) 
+                    for(let i=0; i < points.length; i++) {
+                        delay_travel(i, points[i])
+                    }*/
                 }
 
                 let lastScrollY = window.pageYOffset;
