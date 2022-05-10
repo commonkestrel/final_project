@@ -53,7 +53,6 @@
                 document.body.appendChild( renderer.domElement );
                 renderer.domElement.classList.toggle("renderer")
 
-                camera.position.z = 10;
                 let inverted = false;
                 const end_pos = 0;
 
@@ -141,6 +140,8 @@
                     }
                 }
                 const below = rotateX(ellipse_points[0], 65).y
+                camera.position = ellipse_points[0]
+                camera.position.y += below
                 animate(0);
 
                 let lastScrollY = window.pageYOffset;
