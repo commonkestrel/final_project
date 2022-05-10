@@ -7,6 +7,10 @@ const port = 3000
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+app.get('/three', (req, res) => {
+    res.sendFile(path.join(__dirname, 'HTML', 'three.html'))
+})
+
 app.get('/school', (req, res) => {
     console.log(req.method)
     res.sendFile(path.join(__dirname, 'HTML', 'school.html'))
