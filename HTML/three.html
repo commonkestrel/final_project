@@ -2,15 +2,19 @@
 <html>
     <head>
         <style>
+            html {
+                scroll-behavior: smooth;
+                background-color: white;
+            }
             canvas {
                 position: fixed !important;
                 top: 0px !important;
                 left: 0px !important;
-                z-index: -1;
             }
             body {
                 overflow-x: hidden;
                 height: 5000vh;
+                background-color: white;
             }
             body > * {
                 position: fixed;
@@ -38,52 +42,50 @@
         <script>
             $(document).ready(() => {
                 window.scroll(0, 0)
-                const originScrollY = window.pageYOffset;
+                const originScrollY = 0;
                 const scene = new THREE.Scene();
                 scene.background = new THREE.Color(0x000)
                 originalAspect = window.innerWidth / window.innerHeight;
                 const camera = new THREE.PerspectiveCamera(50, originalAspect, 0.1, 1000);
-                
-                const renderer = new THREE.WebGLRenderer();
+                const renderer = new THREE.WebGLRenderer({alpha: true});
+                scene.background = null;
                 renderer.setSize( window.innerWidth, window.innerHeight );
                 document.body.appendChild( renderer.domElement );
+                renderer.domElement.classList.toggle("renderer")
 
                 const loader = new THREE.TextureLoader();
+                const scanline_texture = loader.load('https://jibble330.pythonanywhere.com/files/networking-earth.png')
                 const black_texture = loader.load('https://jibble330.pythonanywhere.com/files/world-outline-black.png');
                 const white_texture = loader.load('https://jibble330.pythonanywhere.com/files/world-outline-white.png');
 
                 const geometry = new THREE.SphereGeometry(2, 32, 32);
-                const material = new THREE.MeshBasicMaterial({map: black_texture});
+                const material = new THREE.MeshBasicMaterial({map: scanline_texture});
                 const sphere = new THREE.Mesh(geometry, material);
+                sphere.position.x = -15;
                 scene.add(sphere);
+
                 camera.position.z = 10;
-                camera.position.x = -15;
                 let inverted = false;
+                const end_pos = 0;
 
                 const animate = (amount) => {
-                    const end_pos = 0;
-                    const end_pixel = 247 * (end_pos+15)
-                    
+                    const move_end_pixel = 247 * (-end_pos+15)
                     sphere.rotation.y += amount;
-                    if(window.pageYOffset < originScrollY + end_pixel) {
-                        camera.position.x += amount*2;
-                    } else {
-                        camera.position.x = end_pos;
+                    if(window.pageYOffset < move_end_pixel) {
+                        sphere.position.x = (window.pageYOffset * -0.004)+15;
+                    } else if(sphere.position.x != end_pos) {
+                        sphere.position.x = end_pos;
                     }
-                    //line.rotation.y += amount;
 
                     renderer.render(scene, camera);
                 };
                 const invert = () => {
                     if(inverted) {
                         material.map = black_texture;
-                        scene.background = new THREE.Color(0x000);
                     } else {
                         material.map = white_texture;
-                        scene.background = new THREE.Color(0xffffff);
                     }
                     material.map.needsUpdate = true;
-                    scene.background.needsUpdate = true;
                     renderer.render(scene, camera);
                     inverted = !inverted;
                 }
@@ -97,51 +99,33 @@
                 }
                 animate(0);
 
-                const delay_travel = (i, point) => {
+                const delay_travel = (i, point, look) => {
                     setTimeout(() => {
                         camera.position.copy(point)
-                        camera.lookAt(0, 0, 0)
+                        camera.lookAt(look)
                         renderer.render(scene, camera);
                     }, 20*i);
                 }
 
                 const curve_move = () => {
-                    const curve = new THREE.CatmullRomCurve3( [
-                        new THREE.Vector3(0, 0, 10),
-                        new THREE.Vector3(5, 0, 8.66),
-                        new THREE.Vector3(7.71, 0, 7.71),
-                        new THREE.Vector3(8.66, 0, 5),
-                        new THREE.Vector3(10, 0, 0),
-                    ] );
-
-                    const points = curve.getPoints(50);
-
-                    var ellipse = new THREE.EllipseCurve(0, 0, 1, 5, 0, 2.0 * Math.PI, false);
-                    const ellipsepoints = ellipse.getPoints(200).slice(0, 50)
-
-                    const geometry = new THREE.BufferGeometry().setFromPoints( ellipsepoints );
-
-                    const material = new THREE.LineBasicMaterial({color: 0xff0000});
-                    // Create the final object to add to the scene
-                    const curveObject = new THREE.Line(geometry, material);
-                    scene.add(curveObject)
-                    renderer.render(scene, camera);
-                    /*const geometry = new THREE.BufferGeometry().setFromPoints( points );
-
-                    const material = new THREE.LineBasicMaterial({color: 0xff0000});
-                    // Create the final object to add to the scene
-                    const curveObject = new THREE.Line(geometry, material);
-                    scene.add(curveObject)
-                    camera.lookAt(new THREE.Vector3(4.33, -10, 2.5)) 
-                    for(let i=0; i < points.length; i++) {
-                        delay_travel(i, points[i])
-                    }*/
+                    const ellipse = new THREE.EllipseCurve(0, 0, 10+end_pos, 10, 0, 0.5 * Math.PI, false);
+                    const ellipse_points = ellipse.getSpacedPoints(50).reverse();
+                    const view_curve = new THREE.EllipseCurve(0, 0, end_pos, end_pos, 0.5 * Math.PI, Math.PI, false);
+                    const view_points = view_curve.getPoints(50).reverse()
+                    for(let i=0; i<ellipse_points.length; i++) {
+                        const vector = ellipse_points[i]
+                        const translated_point = new THREE.Vector3(vector.x, 0, vector.y)
+                        const view_vector = view_points[i]
+                        const translated_view = new THREE.Vector3(view_vector.x+end_pos, 0, view_vector.y)
+                        delay_travel(i, translated_point, translated_view);
+                    }
                 }
 
                 let lastScrollY = window.pageYOffset;
                 $(document).click(() => {
                     //delay_invert(0)
                     curve_move()
+                    //$('html, body').animate({'scrollTop': '+=5000vh'}) 
                 })
                 $(window).scroll(() => {
                     let amount = (this.pageYOffset - lastScrollY) * 0.002;

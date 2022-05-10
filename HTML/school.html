@@ -96,12 +96,12 @@
                         </div>
                         
                         <div class="form-floating mt-3 mb-3">
-                        <input type="password" class="form-control confirm" id="confirm" aria-describedby="update" placeholder="Same as password">
+                        <input type="password" class="form-control confirm" id="confirm" name="confirm" aria-describedby="update" placeholder="Same as password">
                         <label for="confirm">Confirm</label>
                         <small id="confirm-error" class="error-message"><i class="fa fa-warning"></i>  Must be the same as password.</small>
                     </div>
+                    <button type="submit" id="signupbutton" class="btn btn-primary">Sign up</button>
                 </form>
-                <button type="button" id="signupbutton" class="btn btn-primary">Sign up</button>
             </div>
         </div>
         <script>
@@ -156,7 +156,8 @@
                 $('#loginbutton').click(() => {
                     $("#loginform").submit();
                 });
-                $('#signupbutton').click(() => {
+                $('#signupform').submit((event) => {
+                    event.preventDefault()
                     let errors = 0;
                     email_val = $("#email").val();
                     pass_val = $("#pass").val();
@@ -175,7 +176,11 @@
                     }
 
                     if(errors == 0) {
-                        $("#signupform").submit();
+                        $.ajax({
+                            url: window.location.pathname,
+                            type: 'POST',
+                            data: $('#signupform').serialize()
+                        })
                     }
                 });
             });
