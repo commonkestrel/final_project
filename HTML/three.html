@@ -53,28 +53,47 @@
                 document.body.appendChild( renderer.domElement );
                 renderer.domElement.classList.toggle("renderer")
 
+                camera.position.z = 10;
+                let inverted = false;
+                const end_pos = 0;
+
+                //Load textures
                 const loader = new THREE.TextureLoader();
                 const scanline_texture = loader.load('https://jibble330.pythonanywhere.com/files/networking-earth.png')
                 const black_texture = loader.load('https://jibble330.pythonanywhere.com/files/world-outline-black.png');
                 const white_texture = loader.load('https://jibble330.pythonanywhere.com/files/world-outline-white.png');
 
+                //Initiallize sphere
                 const geometry = new THREE.SphereGeometry(2, 32, 32);
                 const material = new THREE.MeshBasicMaterial({map: scanline_texture});
                 const sphere = new THREE.Mesh(geometry, material);
-                sphere.position.x = -15;
+                sphere.position.x = 15;
                 scene.add(sphere);
 
-                camera.position.z = 10;
-                let inverted = false;
-                const end_pos = 0;
+                //Initiallize objects for view shift
+                const ellipse = new THREE.EllipseCurve(0, 0, 10+end_pos, 10, 0, 0.5 * Math.PI, false);
+                const ellipse_points = ellipse.getSpacedPoints(100).reverse();
+                const view_curve = new THREE.EllipseCurve(0, 0, end_pos, end_pos, 0.5 * Math.PI, Math.PI, false);
+                const view_points = view_curve.getPoints(100).reverse()
 
                 const animate = (amount) => {
                     const move_end_pixel = 247 * (-end_pos+15)
-                    sphere.rotation.y += amount;
+                    const curve_end_pixel = move_end_pixel + (247 * 15)
                     if(window.pageYOffset < move_end_pixel) {
-                        sphere.position.x = (window.pageYOffset * -0.004)+15;
+                        sphere.position.x = (window.pageYOffset * 0.004)-15;
+                        sphere.rotation.y -= amount;
                     } else if(sphere.position.x != end_pos) {
                         sphere.position.x = end_pos;
+                        sphere.rotation.y -= amount;
+                    }
+                    if(window.pageYOffset > move_end_pixel && window.pageYOffset < curve_end_pixel) {
+                        const amount = Math.floor((window.pageYOffset - move_end_pixel)/37.05);
+                        const vector = ellipse_points[amount]
+                        const translated_point = rotateX(vector, 65);
+                        translated_point.y -= below;
+                        const view_vector = view_points[amount];
+                        const translated_view = new THREE.Vector3(view_vector.x+end_pos, 0, view_vector.y);
+                        curve(translated_point, translated_view)
                     }
 
                     renderer.render(scene, camera);
@@ -97,34 +116,36 @@
                         }
                     },50)
                 }
-                animate(0);
 
-                const delay_travel = (i, point, look) => {
-                    setTimeout(() => {
-                        camera.position.copy(point)
-                        camera.lookAt(look)
-                        renderer.render(scene, camera);
-                    }, 20*i);
+                const curve = (point, look) => {
+                    camera.position.copy(point)
+                    camera.lookAt(look)
+                    renderer.render(scene, camera);
+                }
+
+                const rotateX = (point, angle) => {
+                    const radians = angle * Math.PI/180;
+                    const rot_z = point.y * Math.sin(radians);
+                    const rot_y = point.y * Math.cos(radians);
+                    const rot_point = new THREE.Vector3(point.x, -rot_y, rot_z)
+                    return rot_point;
                 }
 
                 const curve_move = () => {
-                    const ellipse = new THREE.EllipseCurve(0, 0, 10+end_pos, 10, 0, 0.5 * Math.PI, false);
-                    const ellipse_points = ellipse.getSpacedPoints(50).reverse();
-                    const view_curve = new THREE.EllipseCurve(0, 0, end_pos, end_pos, 0.5 * Math.PI, Math.PI, false);
-                    const view_points = view_curve.getPoints(50).reverse()
                     for(let i=0; i<ellipse_points.length; i++) {
                         const vector = ellipse_points[i]
-                        const translated_point = new THREE.Vector3(vector.x, 0, vector.y)
+                        const translated_point = rotateX(vector, 65);
+                        translated_point.y -= below
                         const view_vector = view_points[i]
                         const translated_view = new THREE.Vector3(view_vector.x+end_pos, 0, view_vector.y)
-                        delay_travel(i, translated_point, translated_view);
                     }
                 }
+                const below = rotateX(ellipse_points[0], 65).y
+                animate(0);
 
                 let lastScrollY = window.pageYOffset;
                 $(document).click(() => {
                     //delay_invert(0)
-                    curve_move()
                     //$('html, body').animate({'scrollTop': '+=5000vh'}) 
                 })
                 $(window).scroll(() => {
