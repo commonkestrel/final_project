@@ -16,6 +16,12 @@ app.get('/school', (req, res) => {
     res.sendFile(path.join(__dirname, 'HTML', 'school.html'))
 })
 
+app.use('/static', express.static(path.join(__dirname, 'static')))
+
+app.get('/bar', (req, res) => {
+    res.sendFile(path.join(__dirname, 'HTML', 'bar.html'))
+})
+
 app.post('/school', (req, res) => {
     console.log(req.method)
     console.log(req.body.email)

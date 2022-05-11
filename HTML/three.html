@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html>
     <head>
         <style>
             html {
                 scroll-behavior: smooth;
-                background-color: white;
+                background-color: black;
             }
             canvas {
                 position: fixed !important;
@@ -14,7 +14,7 @@
             body {
                 overflow-x: hidden;
                 height: 5000vh;
-                background-color: white;
+                background-color: black;
             }
             body > * {
                 position: fixed;
@@ -55,6 +55,8 @@
 
                 let inverted = false;
                 const end_pos = 0;
+                const move_end_pixel = 247 * (-end_pos+15)
+                const curve_end_pixel = move_end_pixel + (247 * 15)
 
                 //Load textures
                 const loader = new THREE.TextureLoader();
@@ -74,25 +76,28 @@
                 const ellipse_points = ellipse.getSpacedPoints(100).reverse();
                 const view_curve = new THREE.EllipseCurve(0, 0, end_pos, end_pos, 0.5 * Math.PI, Math.PI, false);
                 const view_points = view_curve.getPoints(100).reverse()
+                let move_end = true;
 
                 const animate = (amount) => {
-                    const move_end_pixel = 247 * (-end_pos+15)
-                    const curve_end_pixel = move_end_pixel + (247 * 15)
                     if(window.pageYOffset < move_end_pixel) {
                         sphere.position.x = (window.pageYOffset * 0.004)-15;
                         sphere.rotation.y -= amount;
-                    } else if(sphere.position.x != end_pos) {
+                    } else if(!move_end && amount > 0) {
+                        window.scroll(0, curve_end_pixel);
                         sphere.position.x = end_pos;
                         sphere.rotation.y -= amount;
+                        move_end = true;
                     }
                     if(window.pageYOffset > move_end_pixel && window.pageYOffset < curve_end_pixel) {
                         const amount = Math.floor((window.pageYOffset - move_end_pixel)/37.05);
                         const vector = ellipse_points[amount]
                         const translated_point = rotateX(vector, 65);
-                        translated_point.y -= below;
+                        translated_point.y -= below.y;
                         const view_vector = view_points[amount];
                         const translated_view = new THREE.Vector3(view_vector.x+end_pos, 0, view_vector.y);
                         curve(translated_point, translated_view)
+                    } else if (window.pageYOffset > curve_end_pixel) {
+                        sphere.rotation.y -= amount;
                     }
 
                     renderer.render(scene, camera);
@@ -134,25 +139,31 @@
                     for(let i=0; i<ellipse_points.length; i++) {
                         const vector = ellipse_points[i]
                         const translated_point = rotateX(vector, 65);
-                        translated_point.y -= below
+                        translated_point.y -= below.y
                         const view_vector = view_points[i]
                         const translated_view = new THREE.Vector3(view_vector.x+end_pos, 0, view_vector.y)
                     }
                 }
-                const below = rotateX(ellipse_points[0], 65).y
-                camera.position.z = ellipse_points[0].z
-                camera.position.y = 0
-                animate(0);
+
+                const below = rotateX(ellipse_points[0], 65);
+                camera.position.copy(below);
+                camera.position.y = 0;
+                requestAnimationFrame(() => {
+                    animate(amount);
+                 })
 
                 let lastScrollY = window.pageYOffset;
                 $(document).click(() => {
+                    window.scroll(0, curve_end_pixel);
                     //delay_invert(0)
                     //$('html, body').animate({'scrollTop': '+=5000vh'}) 
                 })
                 $(window).scroll(() => {
                     let amount = (this.pageYOffset - lastScrollY) * 0.002;
                     lastScrollY = window.pageYOffset;
-                    animate(amount)
+                    requestAnimationFrame(() => {
+                       animate(amount);
+                    })
                 });
             });
         </script>
