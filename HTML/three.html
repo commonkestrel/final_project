@@ -76,12 +76,13 @@
                 const ellipse_points = ellipse.getSpacedPoints(100).reverse();
                 const view_curve = new THREE.EllipseCurve(0, 0, end_pos, end_pos, 0.5 * Math.PI, Math.PI, false);
                 const view_points = view_curve.getPoints(100).reverse()
-                let move_end = true;
+                let move_end = false;
 
                 const animate = (amount) => {
                     if(window.pageYOffset < move_end_pixel) {
                         sphere.position.x = (window.pageYOffset * 0.004)-15;
                         sphere.rotation.y -= amount;
+                        move_end = false;
                     } else if(!move_end && amount > 0) {
                         window.scroll(0, curve_end_pixel);
                         sphere.position.x = end_pos;
