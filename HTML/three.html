@@ -98,11 +98,10 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
         <script>
-            window.onbeforeunload = () => {
-                window.scroll(0, 0)
-            }
             $(document).ready(() => {
-                window.scroll(0, 0)
+                window.onbeforeunload = (e) => {
+                    window.scroll(0, 0)
+                }
                 const originScrollY = 0;
                 const scene = new THREE.Scene();
                 scene.background = new THREE.Color(0x000)
