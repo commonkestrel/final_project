@@ -98,6 +98,7 @@
                         sphere.rotation.y -= amount;
                         move_end = false;
                         camera.position.copy(new THREE.Vector3(below.x, 0, below.z))
+                        camera.lookAt(0, 0, 0)
                     } else if(!move_end && amount > 0) {
                         $("html, body").animate({ scrollTop: curve_end_pixel }, 500);
                         scrolling = true;
