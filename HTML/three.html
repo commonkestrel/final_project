@@ -33,7 +33,7 @@
                 border-radius: 8px;
             }
 
-            #anim-line {
+            #scroll-line {
                 position: fixed;
                 left: 50%;
                 width: 30%;
@@ -43,10 +43,10 @@
                 margin-top: 0px;
             }
 
-            #anim-arrow {
+            #scroll-arrow {
                 position: absolute;
                 transform: translateX(-50%);
-                width: 29%;
+                width: 29.5%;
                 bottom: 15px;
                 left: 50%;
                 padding-bottom: 0px;
@@ -91,8 +91,8 @@
     </head>
     <body>
         <div id="img-container">
-            <img src="https://jibble330.pythonanywhere.com/static/anim_line.png" id="anim-line">
-            <img src="https://jibble330.pythonanywhere.com/static/anim_arrow.png" id="anim-arrow">
+            <img src="https://jibble330.pythonanywhere.com/static/anim_line.png" id="scroll-line">
+            <img src="https://jibble330.pythonanywhere.com/static/anim_arrow.png" id="scroll-arrow">
         </div>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.js"></script>
@@ -229,9 +229,9 @@
                 })
                 $(window).scroll((e)=> {
                     if (window.pageYOffset > 0) {
-                        $("#anim-arrow").addClass("scrolled").removeClass("back")
+                        $("#scroll-arrow").addClass("scrolled").removeClass("back")
                     } else {
-                        $("#anim-arrow").addClass("back").removeClass("scrolled")
+                        $("#scroll-arrow").addClass("back").removeClass("scrolled")
                     }
                     if (!scrolling || !e.originalEvent.details) {
                         let amount = (this.pageYOffset - lastScrollY) * 0.002;
