@@ -8,14 +8,6 @@
         <script src="http://threejs.org/build/three.js"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
         <style>
-            #glow {
-                position: fixed;
-                top: 75%;
-                left: 75%;
-                box-shadow: 0px 0px 60px 40px rgba(255,255,255);
-                height: 0px;
-                width: 0px;
-            }
             .error-message {
                 color: red;
                 display: flex;
@@ -44,59 +36,53 @@
                 width: 100%;
                 background-color: rgb(63, 63, 63);
             }
-            #signup {
-                background-color: rgb(126, 126, 126);
+            form {
+                background-color: rgb(119, 119, 119);
                 border: 1px solid rgb(27, 27, 27);
                 border-radius: 10px;
                 padding-bottom: 10px;
             }
             input, textarea, select {
-                background-color: rgb(214, 214, 214) !important; 
+                background-color: rgb(207, 207, 207) !important; 
                 outline-color: rgb(27, 27, 27) !important;
             }
             .fa {
                 position: relative;
                 top: 4px;
             }
-            #globe {
-                z-index: -1;
-            }
         </style>
     </head>
     <body>
-        <canvas id="globe" width="100%" height="100%"></canvas>
-        <div id="glow"></div>
         <div class="container">
-            <button type="button" class="btn btn-primary toggle" id="demotoggle">Log in</button>
+            <button type="button" class="btn btn-primary toggle" id="logintoggle">Log in</button>
             <button type="button" class="btn btn-primary toggle" id="signuptoggle">Sign up</button>
             <div id="login" class="collapse">
                 <form id="loginform">
                     <div class="form-floating mb-3 mt-3">
-                        <input type="text" class="form-control" id="loginemail" placeholder="Enter email" name="email">
+                        <input type="email" class="form-control" id="login-email" name="email">
                         <label for="email">Email</label>
-                      </div>
-                      <div class="form-floating mt-3 mb-3">
-                        <input type="password" class="form-control" id="loginpass" aria-describedby="loginhelp" placeholder="Enter password" name="pswd">
-                        <label for="loginpass">Password</label>
                     </div>
-                    <small id="loginhelp"></small>
+                    <div class="form-floating mb-3 mt-3">
+                        <input type="password" class="form-control" id="login-pass" name="pass" aria-autocomplete="current-password">
+                        <label for="pass">Password</label>
+                    </div>
+                    <button type="submit" id="signupbutton" class="btn btn-primary">Sign up</button>
                 </form>
-                <button type="button" id="loginbutton" class="btn btn-primary">Log in</button>
             </div>
             <div id="signup" class="collapse">
                 <form id="signupform">
                     <div class="form-floating mb-3 mt-3">
-                        <input type="email" class="form-control" id="email" placeholder="Password" name="email">
+                        <input type="email" class="form-control" id="signup-email" name="email">
                         <label for="pass">Email</label>
                         <small id="email-error" class="error-message"><i class="fa fa-warning"></i>  Please input a vaild email.</small>
+                    </div>
                     <div class="form-floating mb-3 mt-3">
-                        <input type="password" class="form-control confirm" aria-describedby="pass-error" id="pass" placeholder="Password" name="pass">
+                        <input type="password" class="form-control confirm" aria-describedby="pass-error" id="signup-pass" name="pass" aria-autocomplete="new-password">
                         <label for="pass">Password</label>
                         <small id="pass-error" class="error-message"></small>
-                        </div>
-                        
+                    </div>
                         <div class="form-floating mt-3 mb-3">
-                        <input type="password" class="form-control confirm" id="confirm" name="confirm" aria-describedby="update" placeholder="Same as password">
+                        <input type="password" class="form-control confirm" id="confirm" name="confirm" aria-describedby="update">
                         <label for="confirm">Confirm</label>
                         <small id="confirm-error" class="error-message"><i class="fa fa-warning"></i>  Must be the same as password.</small>
                     </div>
@@ -124,24 +110,24 @@
                     $(".collapse").collapse('hide');
                     $("#signup").collapse('toggle');
                 });
-                $("#demotoggle").click(() => {
+                $("#logintoggle").click(() => {
                     $(".collapse").collapse('hide');
                     $("#login").collapse('toggle');
                 });
-                $("#email").keyup(() => {
-                    let email_val = $("#email").val();
+                $("#signup-email").keyup(() => {
+                    let email_val = $("#signup-email").val();
                     if (email_val == "" || !valid_email(email_val)) {
-                        $("#email").removeClass("is-valid");
-                        $("#email").addClass("is-invalid");
+                        $("#signup-email").removeClass("is-valid");
+                        $("#signup-email").addClass("is-invalid");
                         $("#email-error").show();
                     } else {
-                        $("#email").removeClass("is-invalid");
-                        $("#email").addClass("is-valid");
+                        $("#signup-email").removeClass("is-invalid");
+                        $("#signup-email").addClass("is-valid");
                         $("#email-error").hide();
                     }
                 });
                 $('.confirm').keyup(() => {
-                    let pass_text = $("#pass").val();
+                    let pass_text = $("#signup-pass").val();
                     let confirm_text = $("#confirm").val();             
                     if (pass_text != confirm_text) {
                         $("#confirm").removeClass("is-valid")
@@ -153,14 +139,14 @@
                         $("#confirm-error").hide()
                     }
                 });
-                $('#loginbutton').click(() => {
-                    $("#loginform").submit();
+                $('#loginbutton').click((event) => {
+                    event.preventDefault()
                 });
                 $('#signupform').submit((event) => {
                     event.preventDefault()
                     let errors = 0;
-                    email_val = $("#email").val();
-                    pass_val = $("#pass").val();
+                    email_val = $("#signup-email").val();
+                    pass_val = $("#signup-pass").val();
                     confirm_val = $("#confirm").val();
                     if(email_val == "" || !valid_email(email_val)) {
                         errors++;
@@ -176,11 +162,17 @@
                     }
 
                     if(errors == 0) {
-                        $.ajax({
-                            url: window.location.pathname,
-                            type: 'POST',
-                            data: $('#signupform').serialize()
+                        $.post("/users/create", {
+                            email: email_val,
+                            pass: pass_val,
+                            confirm: confirm_val
+                        }, (data, status) => {
+                            if(data === "Success") {
+                                
+                            }
                         })
+                    } else {
+                        alert(errors)
                     }
                 });
             });
