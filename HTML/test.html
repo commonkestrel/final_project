@@ -15,6 +15,31 @@
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%);
+                overflow: hidden;
+            }
+            #disappointing {
+                opacity: 0;
+                animation: shake 0.5s;
+
+                /* When the animation is finished, start again */
+                animation-iteration-count: infinite;
+            }
+            .fadein {
+                animation: fadein forwards 4s;
+            }
+
+            @keyframes shake {
+                0% { transform: translate(1px, 1px) rotate(0deg); }
+                10% { transform: translate(-1px, -2px) rotate(-1deg); }
+                20% { transform: translate(-3px, 0px) rotate(1deg); }
+                30% { transform: translate(3px, 2px) rotate(0deg); }
+                40% { transform: translate(1px, -1px) rotate(1deg); }
+                50% { transform: translate(-1px, 2px) rotate(-1deg); }
+                60% { transform: translate(-3px, 1px) rotate(0deg); }
+                70% { transform: translate(3px, 1px) rotate(-1deg); }
+                80% { transform: translate(-1px, -1px) rotate(1deg); }
+                90% { transform: translate(1px, 2px) rotate(0deg); }
+                100% { transform: translate(1px, -2px) rotate(-1deg); }
             }
             #header {
                 align-items: center;
@@ -91,13 +116,8 @@
                         async: false,
                         correct: false
                     }, (data, success) => {
-//                        $("#container").animate({"height": "0px"}, 1000, "easeOut")
                     })
-                    try {
-                        $("#container").animate({"height": "0px"}, 1000)
-                    } catch (err) {
-                        alert(err)
-                    }
+                    $("#container").animate({"height": "0px"}, 1000)
                 })
             })
         </script>

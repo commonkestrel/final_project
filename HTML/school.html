@@ -168,11 +168,14 @@
                             pass: pass_val,
                             confirm: confirm_val
                         }, (data, status) => {
-                            if(data === "Success") {
-                                
+                            if(data == true) {
+                                try {
+                                    window.location.href = window.location.origin + "/test"
+                                } catch (err) {
+                                    alert(err)
+                                }
                             }
                         })
-                        alert(document.cookie)
                     } else {
                         alert(errors)
                     }
