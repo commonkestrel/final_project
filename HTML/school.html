@@ -163,6 +163,7 @@
 
                     if(errors == 0) {
                         $.post("/users/create", {
+                            async: false,
                             email: email_val,
                             pass: pass_val,
                             confirm: confirm_val
@@ -171,6 +172,7 @@
                                 
                             }
                         })
+                        alert(document.cookie)
                     } else {
                         alert(errors)
                     }
