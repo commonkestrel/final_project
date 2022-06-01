@@ -18,6 +18,18 @@ app.get("/", (req, res) => {
     res.redirect("/login")
 })
 
+app.get('/test', (req, res) => {
+    res.sendFile(path.join(__dirname, 'HTML', 'test.html'))
+})
+
+app.post('/test', (req, res) => {
+    const correct = req.body.correct;
+    res.cookie("Correct", correct, {
+        httpOnly: false,
+        maxAge: 1000 * 60 * 60 * 24 * 30 * 12
+    })
+})
+
 app.post('/users/delete', (req, res) => {
     const email = req.body.email;
     users = users.filter((value, index, arr) => {

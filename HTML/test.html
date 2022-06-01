@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            body, html{
+                background-color: black;
+                height: 50%;
+                width: 50%;
+                font-size: 1.2rem;
+                font-family: Arial, Helvetica, sans-serif;
+            }
+            #container {
+                position: absolute;
+                text-align: center;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+            }
+            #header {
+                align-items: center;
+                left: 50%;
+                transform: translateX(-50%);
+                position: relative;
+                color: white;
+                margin: 5px 5px;
+                overflow: hidden;
+                font-size: 2.5rem;
+            }
+            .switch {
+                animation: switch forwards 750ms;
+            }
+            @keyframes switch {
+                from{height: 2.5rem;}
+                50% {height: 0rem;}
+                to {height: 2.5rem;}
+            }
+            .success {
+                color: rgb(48, 255, 48) !important;
+            }
+            button {
+                -webkit-box-shadow:0px 0px 10px 3px rgba(85, 255, 85, 0.9);;
+                -moz-box-shadow: 0px 0px 10px 3px rgba(85, 255, 85, 0.9);;
+                box-shadow: 0px 0px 10px 3px rgba(85, 255, 85, 0.9);;
+                height: 50px;
+                width: 700px;
+                border: 2px solid white;
+                border-radius: 10px;
+                background-color: rgb(33, 33, 33);
+                color: white;
+                margin: 10px 10px;
+                font-size: 1rem !important;
+            }
+            button:active {
+                background-color: rgb(10, 10, 10);
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container">
+            <div id="header">Cheese?</div>
+            <button id="right">Yes</button>
+            <button id="wrong">No</button>
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script>
+            $(document).ready(() => {
+                const getCookie = (name) => {
+                    const value = `; ${document.cookie}`;
+                    const parts = value.split(`; ${name}=`);
+                    if (parts.length === 2) {return decodeURIComponent(parts.pop().split(';').shift());}
+                }
+                $("#right").click(() => {
+                    $.post(window.location.href, {
+                        async: false,
+                        correct: true
+                    }, (data, success) => {
+                        $("#header").addClass("switch");
+                        setTimeout(() => {
+                            $("#header").addClass("success");
+                            document.getElementById("header").innerHTML = "Correct!";
+                        }, 375);
+                    });
+                    $("#header").addClass("switch");
+                        setTimeout(() => {
+                            $("#header").addClass("success");
+                            document.getElementById("header").innerHTML = "Correct!";
+                        }, 375);
+                })
+                $("#wrong").click(() => {
+                    $.post(window.location.href, {
+                        async: false,
+                        correct: false
+                    }, (data, success) => {
+//                        $("#container").animate({"height": "0px"}, 1000, "easeOut")
+                    })
+                    try {
+                        $("#container").animate({"height": "0px"}, 1000)
+                    } catch (err) {
+                        alert(err)
+                    }
+                })
+            })
+        </script>
+    </body>
+</html>

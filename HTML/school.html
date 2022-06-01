@@ -145,9 +145,9 @@
                 $('#signupform').submit((event) => {
                     event.preventDefault()
                     let errors = 0;
-                    email_val = $("#signup-email").val();
-                    pass_val = $("#signup-pass").val();
-                    confirm_val = $("#confirm").val();
+                    const email_val = $("#signup-email").val();
+                    const pass_val = $("#signup-pass").val();
+                    const confirm_val = $("#confirm").val();
                     if(email_val == "" || !valid_email(email_val)) {
                         errors++;
                         $("#email-error").show()
