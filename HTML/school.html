@@ -139,8 +139,9 @@
                         $("#confirm-error").hide()
                     }
                 });
-                $('#loginbutton').click((event) => {
+                $('#loginform').submit((event) => {
                     event.preventDefault()
+                    $("#loginform")[0].reset()
                 });
                 $('#signupform').submit((event) => {
                     event.preventDefault()
@@ -170,7 +171,7 @@
                         }, (data, status) => {
                             if(data == true) {
                                 try {
-                                    window.location.href = window.location.origin + "/test"
+                                    window.location.href = window.location.origin + "/utils"
                                 } catch (err) {
                                     alert(err)
                                 }

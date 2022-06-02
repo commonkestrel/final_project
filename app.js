@@ -15,7 +15,21 @@ app.use(cookieParser())
 app.use('/static', express.static(path.join(__dirname, 'static')));
 
 app.get("/", (req, res) => {
-    res.redirect("/login")
+    if ("Name" in req.cookies) {
+        console.log(users)
+        console.log(req.cookies)
+    }
+    if ("Name" in req.cookies && users.find(user => user.email = req.cookies["Name"])) {
+        res.redirect("/test")
+    } else if ("Name" in req.cookies && !(users.find(user => user.email = req.cookies["Name"]))) {
+        res.clearCookie("Name").redirect("/login")
+    } else {
+        res.redirect("/login")
+    }
+})
+
+app.get("/utils", (req, res) => {
+    res.sendFile(path.join(__dirname, "HTML", "utils.html"))
 })
 
 app.get('/test', (req, res) => {
@@ -35,7 +49,11 @@ app.post('/users/delete', (req, res) => {
     users = users.filter((value, index, arr) => {
         return value != users.find(user => user.email = req.body.email);
     })
-    res.clearCookie("Name").send()
+    res.clearCookie("Name").send(true)
+})
+
+app.post('/users/logout', (req, res) => {
+    res.clearCookie("Name").send(true);
 })
 
 app.post('/users/create', async (req, res) => {

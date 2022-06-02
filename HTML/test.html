@@ -16,16 +16,20 @@
                 left: 50%;
                 transform: translate(-50%, -50%);
                 overflow: hidden;
+                font-size: 2.5rem;
+            }
+            #second {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
             }
             #disappointing {
                 opacity: 0;
+                color: rgb(150, 0, 0);
+                font-size: 5rem;
                 animation: shake 0.5s;
-
-                /* When the animation is finished, start again */
                 animation-iteration-count: infinite;
-            }
-            .fadein {
-                animation: fadein forwards 4s;
             }
 
             @keyframes shake {
@@ -55,7 +59,7 @@
                 animation: switch forwards 750ms;
             }
             @keyframes switch {
-                from{height: 2.5rem;}
+                from {height: 2.5rem;}
                 50% {height: 0rem;}
                 to {height: 2.5rem;}
             }
@@ -81,6 +85,9 @@
         </style>
     </head>
     <body>
+        <div id="second">
+            <h1 id="disappointing">disappointing</h1>
+        </div>
         <div id="container">
             <div id="header">Cheese?</div>
             <button id="right">Yes</button>
@@ -118,6 +125,9 @@
                     }, (data, success) => {
                     })
                     $("#container").animate({"height": "0px"}, 1000)
+                    setTimeout(() => {
+                        $("#disappointing").animate({"opacity": 1}, 10000, "linear")
+                    }, 3000)
                 })
             })
         </script>
