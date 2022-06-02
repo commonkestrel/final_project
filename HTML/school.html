@@ -53,6 +53,7 @@
         </style>
     </head>
     <body>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="danger"><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>
         <div class="container">
             <button type="button" class="btn btn-primary toggle" id="logintoggle">Log in</button>
             <button type="button" class="btn btn-primary toggle" id="signuptoggle">Sign up</button>
@@ -100,6 +101,7 @@
             };
 
             $(document).ready(() => {
+                $("#danger").hide()
                 $(".error-message").hide()
 
                 $(window).scroll(() => {
@@ -141,7 +143,21 @@
                 });
                 $('#loginform').submit((event) => {
                     event.preventDefault()
+                    const email = $("#login-email").val();
+                    const pass = $("#login-pass").val();
+                    console.log(email + ' ' + pass)
                     $("#loginform")[0].reset()
+                    $.post("/users/login", {
+                        async: false,
+                        email: email,
+                        pass: pass
+                    }, (data, status) => {
+                        if(!data) {
+                            $("#danger").html("Email or password incorrect!" + $("#danger").html()).show();
+                        } else {
+                            window.location.href = window.location.origin + "/utils"
+                        }
+                    })
                 });
                 $('#signupform').submit((event) => {
                     event.preventDefault()

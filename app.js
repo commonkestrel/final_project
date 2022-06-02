@@ -45,15 +45,15 @@ app.post('/test', (req, res) => {
 })
 
 app.post('/users/delete', (req, res) => {
-    const email = req.body.email;
     users = users.filter((value, index, arr) => {
-        return value != users.find(user => user.email = req.body.email);
+        return value != users.find(user => user.email = req.cookies["Name"]);
     })
     res.clearCookie("Name").send(true)
 })
 
 app.post('/users/logout', (req, res) => {
     res.clearCookie("Name").send(true);
+    console.log(users)
 })
 
 app.post('/users/create', async (req, res) => {
@@ -62,8 +62,10 @@ app.post('/users/create', async (req, res) => {
             return res.send(false)
         }
         const hashedPassword = await bcrypt.hash(req.body.pass, 10)
+        console.log(req.body.email)
         const user = {"email": req.body.email, "password": hashedPassword}
         users.push(user);
+        console.log(users)
         res.cookie("Name", user.email, {
                 httpOnly: false,
                 maxAge: 1000 * 60 * 60 * 24 * 30 * 12
@@ -75,10 +77,14 @@ app.post('/users/create', async (req, res) => {
     }
 });
 
+app.get('/three', (req, res) => {
+    res.sendFile(path.join(__dirname, "HTML", "three.html"))
+})
+
 app.post('/users/login', (req, res) => {
     const user = users.find(user => user.email = req.body.email)
     if (user == null) {
-        return res.status(400).send('User not found')
+        return res.send(false)
     }
     try{
         if (bcrypt.compare(req.body.pass, user.password)) {
