@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <style>
+            body, html {
+                background-color: rgb(19, 19, 19);
+            }
+            #navbar {
+                position: fixed;
+                background-color: rgb(77, 77, 77);
+                top: 0px;
+                left: 0px;
+                width: 100%;
+                height: 5%;
+            }
+            #navbar > * {
+                font-family: 'Courier New';
+            }
+            .nav-btn {
+                color: whitesmoke;
+                float: left;
+                height: 100%;
+                width: 10%;
+                margin: 0px;
+                padding: 0px;
+                cursor: pointer;
+                border-top: 0px;
+                border-bottom: 0px;
+                border-left: 2px solid rgb(36, 36, 36);
+                border-right: 2px solid rgb(36, 36, 36);
+                background-color: rgb(77, 77, 77);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                text-decoration: none;
+                transition: 0.3s ease;
+            }
+            .nav-btn:hover {
+                border-left: 2px solid rgb(43, 43, 43);
+                border-right: 2px solid rgb(43, 43, 43);
+                background-color: rgb(43, 43, 43);
+            }
+            .dropdown-btn {
+                color: rgb(172, 172, 172);
+                position: fixed;
+                float: right;
+                right: 2.5%;
+                top: 2.5%;
+                transform: translateY(-50%);
+                background-color: rgb(77, 77, 77);
+                border: 0px;
+                border-bottom: 1px solid rgb(172, 172, 172) !important;
+                transition: 0.15s ease;
+                border-color: rgb(172, 172, 172);
+            }
+            .dropdown-btn:hover {
+                color: rgb(238, 238, 238);
+                border-bottom: 1px solid rgb(238, 238, 238) !important;
+                border-color: rgb(238, 238, 238);
+            }
+            .drop-arrow {
+                margin-left: 10px;
+                margin-bottom: 1px;
+                border-style: solid;
+                border-color: inherit;
+                border-width: 0 3px 3px 0;
+                display: inline-block;
+                padding: 3px;
+                transform: rotate(45deg);
+            }
+            .flip-up {
+                animation: flip forwards 250ms;
+            }
+            .up {
+                margin-bottom: -3.5px;
+                transform: rotate(225deg);
+            }
+            .flip-down {
+                animation: flip reverse 250ms;
+            }
+            .down {
+                margin-bottom: 1px;
+                transform: rotate(45deg);
+            }
+            @keyframes flip {
+                0%{margin-bottom: 1px; transform: rotate(45deg);}
+                100%{margin-bottom: -3.5px; transform: rotate(225deg);}
+            }
+            #drop-contents {
+                position: fixed;
+                top: 5%;
+                right: 2.5%;
+                height: 0px;
+            }
+            #drop-contents > * {
+                width: 100%;
+                height: 3rem;
+                background-color: rgb(77, 77, 77);
+                border: 0px;
+                border-top: 1px solid rgb(90, 90, 90);
+                transition: 0.15s ease;
+                color: rgb(172, 172, 172);
+            }
+            #drop-contents>*:hover {
+                color: rgb(238, 238, 238);
+            }
+            #drop-contents:last-child {
+                border-radius: 0px 0px 7px 7px;
+                overflow: hidden;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="navbar">
+            <a href="/login" class="nav-btn">Log In</a>
+            <a href="/test" class="nav-btn">The Test</a>
+            <a href="/three" class="nav-btn">Three</a>
+                <button type="button" class="dropdown-btn"><span class="drop-arrow"></span></button>
+                <div id="drop-contents">
+                    <button id="logout" type="button" class="drop-contents">Log Out</button>
+                    <button id="delete" type="button" class="drop-contents">Delete Account</button>
+                </div>
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script>
+            const getCookie = (name) => {
+                const value = `; ${document.cookie}`;
+                const parts = value.split(`; ${name}=`);
+                if (parts.length === 2) {return decodeURIComponent(parts.pop().split(';').shift());}
+            }
+            $(document).ready(() => {
+                if(getCookie("Name")) {
+                    $(".dropdown-btn").html(getCookie("Name") + '<span class="drop-arrow"></span>');
+                } else {
+                    $(".dropdown-btn").hide();
+                }
+                $("drop-contents").width($("dropdown-btn").width())
+                $(".dropdown-btn").click(() => {
+                    if($(".dropdown-btn").hasClass("open")) {
+                        $(".dropdown-btn").removeClass("open");
+                        $(".drop-arrow").removeClass("up");
+                        $(".drop-arrow").addClass("flip-down");
+                        $("#drop-contents").animate({height: "0rem"}, 250);
+                        setTimeout(() => {
+                            $(".drop-arrow").addClass("down").removeClass("flip-down");
+                        }, 250)
+                    } else {
+                        $(".dropdown-btn").addClass("open");
+                        $(".drop-arrow").removeClass("down");
+                        $(".drop-arrow").addClass("flip-up");
+                        $("#drop-contents").animate({height: "6rem"}, 250);
+                        setTimeout(() => {
+                            $(".drop-arrow").addClass("up").removeClass("flip-up");
+                        }, 250)
+                    }
+                })
+                $("#logout").click(() => {
+                    $.post("/users/logout", {
+                        async: false
+                    }, (data, status) => {
+                        window.location.href = window.location.origin + "/login"
+                    })
+                })
+                $("#delete").click(() => {
+                    $.post("/users/delete", {
+                        async: false
+                    }, (data, status) => {
+                        window.location.href = window.location.origin + "/login"
+                    })
+                })
+            })
+        </script>
+    </body>   
+</html>
