@@ -6,7 +6,7 @@ const cookieParser = require("cookie-parser")
 const app = express();
 const port = 3000;
 
-const users = [];
+let users = [];
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -20,7 +20,7 @@ app.get("/", (req, res) => {
         console.log(req.cookies)
     }
     if ("Name" in req.cookies && users.find(user => user.email = req.cookies["Name"])) {
-        res.redirect("/test")
+        res.redirect("/utils")
     } else if ("Name" in req.cookies && !(users.find(user => user.email = req.cookies["Name"]))) {
         res.clearCookie("Name").redirect("/login")
     } else {
