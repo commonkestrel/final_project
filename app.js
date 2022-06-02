@@ -81,13 +81,14 @@ app.get('/three', (req, res) => {
     res.sendFile(path.join(__dirname, "HTML", "three.html"))
 })
 
-app.post('/users/login', (req, res) => {
+app.post('/users/login', async (req, res) => {
     const user = users.find(user => user.email = req.body.email)
     if (user == null) {
         return res.send(false)
     }
     try{
-        if (bcrypt.compare(req.body.pass, user.password)) {
+        if (await bcrypt.compare(req.body.pass, user.password)) {
+            console.log("Correct!")
             res.cookie("Name", user.email, {
                 http: false,
                 maxAge: 1000 * 60 * 60 * 24 * 30 * 12
