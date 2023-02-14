@@ -13,6 +13,7 @@ app.use(bodyParser.json());
 app.use(cookieParser())
 
 app.use('/static', express.static(path.join(__dirname, 'static')));
+app.use('/js', express.static(path.join(__dirname, 'js')));
 
 app.get("/", (req, res) => {
     if ("Name" in req.cookies) {
